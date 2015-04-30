@@ -272,7 +272,7 @@ public class GamePlay : MonoBehaviour {
                         SoundEngine.getInstance().PlayOneShot(SoundEngine.getInstance()._soundShoot);
                         LevelManager.countbubbleShoot++;
                         GunnerAnim.Play("GUNNER_SHOOT");
-                        LevelManager.currentBubble.rigidbody2D.velocity = fingerPos;//
+                        LevelManager.currentBubble.GetComponent<Rigidbody2D>().velocity = fingerPos;//
                         LevelManager.currentBubble.GetComponent<Bubble>().currentvelocity = fingerPos;//
                         LevelManager.currentBubble.transform.eulerAngles = new Vector3(0, 0, 0);
                         LevelManager.currentBubble.GetComponent<Bubble>().state = Bubble.STATE_BUBBLE_SHOOT;

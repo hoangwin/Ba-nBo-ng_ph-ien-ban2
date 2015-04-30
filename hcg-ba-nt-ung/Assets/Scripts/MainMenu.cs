@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour {
     public GameObject GameButton;
     public GameObject GameShop;
 	void Start () {
+        
 		DEF.Init ();
 		DEF.ScaleAnchorGui();
 		ScoreControl.loadGame();
@@ -22,7 +23,7 @@ public class MainMenu : MonoBehaviour {
 
         SoundEngine.getInstance().PlayLoop(SoundEngine.getInstance()._soundBG1);
         //Application.targetFrameRate = 60;
-
+        GamePlay.ShowADS();
 	}	
 	// Update is called once per frame
 	void Update () {

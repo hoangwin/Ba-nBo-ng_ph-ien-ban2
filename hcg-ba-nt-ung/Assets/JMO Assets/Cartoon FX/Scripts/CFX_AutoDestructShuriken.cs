@@ -10,21 +10,21 @@ public class CFX_AutoDestructShuriken : MonoBehaviour
     public int sortLayer = 0;
 	void Start ()
 	{
-		if (particleSystem != null) 
+		if (GetComponent<ParticleSystem>() != null) 
 		{
             Debug.Log("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
 			//if(gameObject.name!="LEVEL_UP(Clone)")
 			{
-				particleSystem.renderer.sortingLayerName = "Default";
-                particleSystem.renderer.sortingOrder = sortLayer;
+				GetComponent<ParticleSystem>().GetComponent<Renderer>().sortingLayerName = "Default";
+                GetComponent<ParticleSystem>().GetComponent<Renderer>().sortingOrder = sortLayer;
                 if (child != null)
                 {
                     for (int i = 0; i < child.Length; i++)
                     {
-                        if (child[i].particleSystem != null)
+                        if (child[i].GetComponent<ParticleSystem>() != null)
                         {
-                            child[i].particleSystem.renderer.sortingLayerName = "Default";
-                            child[i].particleSystem.renderer.sortingOrder = sortLayer;
+                            child[i].GetComponent<ParticleSystem>().GetComponent<Renderer>().sortingLayerName = "Default";
+                            child[i].GetComponent<ParticleSystem>().GetComponent<Renderer>().sortingOrder = sortLayer;
                         }
                     }
                 }
@@ -42,7 +42,7 @@ public class CFX_AutoDestructShuriken : MonoBehaviour
 		while(true)
 		{
 			yield return new WaitForSeconds(0.5f);
-			if(!particleSystem.IsAlive(true))
+			if(!GetComponent<ParticleSystem>().IsAlive(true))
 			{
 				if(OnlyDeactivate)
 				{

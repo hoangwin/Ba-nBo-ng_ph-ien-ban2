@@ -36,7 +36,7 @@ public class Sounds_GamePlay : MonoBehaviour
 	{
 		try
 		{
-			audio.PlayOneShot (c);
+			GetComponent<AudioSource>().PlayOneShot (c);
 		} catch(MissingComponentException c12)
 		{
 			Debug.Log("TOAN_STT audio not done loaded yet" + c12.Message);
@@ -52,7 +52,7 @@ public class Sounds_GamePlay : MonoBehaviour
 
         try
         {
-            audio.PlayOneShot(c);
+            GetComponent<AudioSource>().PlayOneShot(c);
         }
         catch (MissingComponentException c12)
         {
