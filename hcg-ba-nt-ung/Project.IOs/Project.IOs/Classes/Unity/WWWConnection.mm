@@ -1,14 +1,12 @@
 #include "WWWConnection.h"
 
-#include <map>
-#include <string>
-
 // WARNING: this MUST be c decl (NSString ctor will be called after +load, so we cant really change its value)
-// If you need to communicate with HTTPS server with self signed certificate
-// you might consider UnityWWWConnectionSelfSignedCertDelegate. Though use it on your own
-// risk. Blindly accepting self signed certificate is prone to MITM attack
-//const char* WWWDelegateClassName 		= "UnityWWWConnectionSelfSignedCertDelegate";
-const char* WWWDelegateClassName 		= "UnityWWWConnectionDelegate";
+
+// If you need to communicate with HTTPS server with self signed certificate you might consider UnityWWWConnectionSelfSignedCertDelegate
+// Though use it on your own risk. Blindly accepting self signed certificate is prone to MITM attack
+
+//const char* WWWDelegateClassName		= "UnityWWWConnectionSelfSignedCertDelegate";
+const char* WWWDelegateClassName		= "UnityWWWConnectionDelegate";
 const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 
 @interface UnityWWWConnectionDelegate()
@@ -34,7 +32,7 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 	NSString*			_password;
 
 	// response
-	NSString* 			_responseHeader;
+	NSString*			_responseHeader;
 	int					_status;
 	size_t				_estimatedLength;
 	int					_retryCount;
@@ -105,7 +103,6 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 	[_connection cancel];
 	_connection = nil;
 
-	[_data release];
 	_data = nil;
 }
 
@@ -117,17 +114,20 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 	self->_status = 200;
 	if([response isMemberOfClass:[NSHTTPURLResponse class]])
 	{
-		NSDictionary* respHeader = [(NSHTTPURLResponse*)response allHeaderFields];
+		NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+		NSDictionary* respHeader = [httpResponse allHeaderFields];
 		NSEnumerator* headerEnum = [respHeader keyEnumerator];
 
+		self->_status = [httpResponse statusCode];
+
 		NSMutableString* headerString = [NSMutableString stringWithCapacity:1024];
-		{
-			for(id headerKey = [headerEnum nextObject] ; headerKey ; headerKey = [headerEnum nextObject])
-				[headerString appendFormat:@"%@: %@\n", (NSString*)headerKey, (NSString*)[respHeader objectForKey:headerKey]];
-		}
+		[headerString appendFormat:@"Status: HTTP/1.1 %d %@\n", self->_status,
+								   [NSHTTPURLResponse localizedStringForStatusCode:self->_status]];
+
+		for(id headerKey = [headerEnum nextObject] ; headerKey ; headerKey = [headerEnum nextObject])
+			[headerString appendFormat:@"%@: %@\n", (NSString*)headerKey, (NSString*)[respHeader objectForKey:headerKey]];
 
 		self->_responseHeader	= headerString;
-		self->_status			= [(NSHTTPURLResponse*)response statusCode];
 
 		long long contentLength = [response expectedContentLength];
 		self->_estimatedLength	= contentLength > 0 ? contentLength : 0;
@@ -148,7 +148,7 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 	if(self->_data == nil)
 	{
 		size_t capacity = self->_estimatedLength > 0 ? self->_estimatedLength : 1024;
-		self->_data = [[NSMutableData dataWithCapacity: capacity] retain];
+		self->_data = [NSMutableData dataWithCapacity: capacity];
 	}
 
 	[self->_data appendData:data];
@@ -174,27 +174,20 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 	UnityReportWWWSentData(self.udata, totalBytesWritten, totalBytesExpectedToWrite);
 }
 
-
-- (void)connection:(NSURLConnection*)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge*)challenge
+- (BOOL)connection:(NSURLConnection*)connection handleAuthenticationChallenge:(NSURLAuthenticationChallenge*)challenge
 {
-	// we imitate cpp idiom of private virtual func for implementation details
-	BOOL authHandled = NO;
-	{
-		#pragma clang diagnostic push
-    	#pragma clang diagnostic ignored "-Wobjc-method-access"
-
-		if([self respondsToSelector:@selector(connection:handleAuthenticationChallenge:success:)])
-			[self connection:connection handleAuthenticationChallenge:challenge success:&authHandled];
-
-		#pragma clang diagnostic pop
-	}
+	return NO;
+}
+- (void)connection:(NSURLConnection*)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge*)challenge
+{
+	BOOL authHandled = [self connection:connection handleAuthenticationChallenge:challenge];
 
 	if(authHandled == NO)
 	{
 		self->_retryCount++;
 
 		// Empty user or password
-		if (self->_retryCount > 1 || self.user == nil || [self.user length] == 0 || self.password == nil || [self.password length]  == 0)
+		if(self->_retryCount > 1 || self.user == nil || [self.user length] == 0 || self.password == nil || [self.password length]  == 0)
 		{
 			[[challenge sender] cancelAuthenticationChallenge:challenge];
 			return;
@@ -212,20 +205,17 @@ const char* WWWRequestProviderClassName = "UnityWWWRequestDefaultProvider";
 
 @implementation UnityWWWConnectionSelfSignedCertDelegate
 
-- (BOOL)connection:(NSURLConnection*)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace*)protectionSpace
-{
-	return YES;
-}
-
-- (void)connection:(NSURLConnection*)connection handleAuthenticationChallenge:(NSURLAuthenticationChallenge*)challenge success:(BOOL*)success
+- (BOOL)connection:(NSURLConnection*)connection handleAuthenticationChallenge:(NSURLAuthenticationChallenge*)challenge
 {
 	if([[challenge.protectionSpace authenticationMethod] isEqualToString:@"NSURLAuthenticationMethodServerTrust"])
 	{
 		[challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]
 			forAuthenticationChallenge:challenge];
 
-		*success = YES;
+		return YES;
 	}
+
+	return [super connection:connection handleAuthenticationChallenge:challenge];
 }
 
 @end
@@ -255,10 +245,10 @@ extern "C" void* UnityStartWWWConnectionGet(void* udata, const void* headerDict,
 	UnityWWWConnectionDelegate*	delegate = [UnityWWWConnectionDelegate newDelegateWithCStringURL:url udata:udata];
 
 	NSMutableURLRequest* request =
-		[UnityWWWConnectionDelegate newRequestForHTTPMethod:@"GET" url:delegate.url headers:(NSDictionary*)headerDict];
+		[UnityWWWConnectionDelegate newRequestForHTTPMethod:@"GET" url:delegate.url headers:(__bridge NSDictionary*)headerDict];
 
 	delegate.connection = [NSURLConnection connectionWithRequest:request delegate:delegate];
-	return delegate;
+	return (__bridge_retained void*)delegate;
 }
 
 extern "C" void* UnityStartWWWConnectionPost(void* udata, const void* headerDict, const char* url, const void* data, unsigned length)
@@ -266,38 +256,38 @@ extern "C" void* UnityStartWWWConnectionPost(void* udata, const void* headerDict
 	UnityWWWConnectionDelegate*	delegate = [UnityWWWConnectionDelegate newDelegateWithCStringURL:url udata:udata];
 
 	NSMutableURLRequest* request =
-		[UnityWWWConnectionDelegate newRequestForHTTPMethod:@"POST" url:delegate.url headers:(NSDictionary*)headerDict];
+		[UnityWWWConnectionDelegate newRequestForHTTPMethod:@"POST" url:delegate.url headers:(__bridge NSDictionary*)headerDict];
 	[request setHTTPBody:[NSData dataWithBytes:data length:length]];
 	[request setValue:[NSString stringWithFormat:@"%d", length] forHTTPHeaderField:@"Content-Length"];
 
 	delegate.connection = [NSURLConnection connectionWithRequest:request delegate:delegate];
-	return delegate;
+	return (__bridge_retained void*)delegate;
 }
 
 extern "C" void UnityDestroyWWWConnection(void* connection)
 {
-	UnityWWWConnectionDelegate* delegate = (UnityWWWConnectionDelegate*)connection;
+	UnityWWWConnectionDelegate* delegate = (__bridge_transfer UnityWWWConnectionDelegate*)connection;
 
 	[delegate cleanup];
-	[delegate release];
+	delegate = nil;
 }
 
 extern "C" const void* UnityGetWWWData(const void* connection)
 {
-	return [((UnityWWWConnectionDelegate*)connection).data bytes];
+	return ((__bridge UnityWWWConnectionDelegate*)connection).data.bytes;
 }
 
 extern "C" int UnityGetWWWDataLength(const void* connection)
 {
-	return [((UnityWWWConnectionDelegate*)connection).data length];
+	return ((__bridge UnityWWWConnectionDelegate*)connection).data.length;
 }
 
 extern "C" const char* UnityGetWWWURL(const void* connection)
 {
-	return [[((UnityWWWConnectionDelegate*)connection).url absoluteString] UTF8String];
+	return [[((__bridge UnityWWWConnectionDelegate*)connection).url absoluteString] UTF8String];
 }
 
 extern "C" void UnityShouldCancelWWW(const void* connection)
 {
-	((UnityWWWConnectionDelegate*)connection).shouldAbort = YES;
+	((__bridge UnityWWWConnectionDelegate*)connection).shouldAbort = YES;
 }

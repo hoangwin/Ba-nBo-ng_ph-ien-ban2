@@ -6,7 +6,6 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
 #import <QuartzCore/CADisplayLink.h>
-#import <UIKit/UIKit.h>
 #import <Availability.h>
 
 #import <OpenGLES/EAGL.h>
@@ -22,21 +21,17 @@
 // DisplayLink is the only run loop mode now - all others were removed
 
 #include "CrashReporter.h"
-#include "iPhone_OrientationSupport.h"
-#include "iPhone_Profiler.h"
 
-#include "UI/Keyboard.h"
+#include "UI/OrientationSupport.h"
 #include "UI/UnityView.h"
+#include "UI/Keyboard.h"
 #include "UI/SplashScreen.h"
+#include "Unity/InternalProfiler.h"
 #include "Unity/DisplayManager.h"
 #include "Unity/EAGLContextHelper.h"
 #include "Unity/GlesHelper.h"
 #include "PluginBase/AppDelegateListener.h"
-#import "GADBannerView.h"//here
-#import "iAd/ADBannerView.h"
 
-
-extern "C" void UnityRunUnitTests();
 
 bool	_ios42orNewer			= false;
 bool	_ios43orNewer			= false;
@@ -44,199 +39,84 @@ bool	_ios50orNewer			= false;
 bool	_ios60orNewer			= false;
 bool	_ios70orNewer			= false;
 bool	_ios80orNewer			= false;
+bool	_ios81orNewer			= false;
+bool	_ios82orNewer			= false;
 
-bool	_supportsDiscard		= false;
-bool	_supportsMSAA			= false;
-bool	_supportsPackedStencil	= false;
-
-bool	_glesContextCreated		= false;
+// was unity rendering already inited: we should not touch rendering while this is false
+bool	_renderingInited		= false;
+// was unity inited: we should not touch unity api while this is false
 bool	_unityAppReady			= false;
+// should we skip present on next draw: used in corner cases (like rotation) to fill both draw-buffers with some content
 bool	_skipPresent			= false;
+// was app "resigned active": some operations do not make sense while app is in background
 bool	_didResignActive		= false;
 
-void UnityInitJoysticks();
+// was startUnity scheduled: used to make startup robust in case of locking device
+static bool	_startUnityScheduled	= false;
+
+bool	_supportsMSAA			= false;
 
 
 @implementation UnityAppController
-@synthesize bannerView_;//here
-@synthesize bannerIsVisible ;
-@synthesize interstitial_;
-@synthesize iAdBannerView;
-@synthesize isShowAdmob;
 
-@synthesize unityView			= _unityView;
-@synthesize unityDisplayLink	= _unityDisplayLink;
+@synthesize unityView				= _unityView;
+@synthesize unityDisplayLink		= _unityDisplayLink;
 
-@synthesize rootView			= _rootView;
-@synthesize rootViewController	= _rootController;
-@synthesize mainDisplay			= _mainDisplay;
-@synthesize renderDelegate		= _renderDelegate;
+@synthesize rootView				= _rootView;
+@synthesize rootViewController		= _rootController;
+@synthesize mainDisplay				= _mainDisplay;
+@synthesize renderDelegate			= _renderDelegate;
+
+@synthesize interfaceOrientation	= _curOrientation;
+
+- (id)init
+{
+	if( (self = [super init]) )
+	{
+		// due to clang issues with generating warning for overriding deprecated methods
+		// we will simply assert if deprecated methods are present
+		// NB: methods table is initied at load (before this call), so it is ok to check for override
+		NSAssert(![self respondsToSelector:@selector(createUnityViewImpl)],
+			@"createUnityViewImpl is deprecated and will not be called. Override createUnityView"
+		);
+		NSAssert(![self respondsToSelector:@selector(createViewHierarchyImpl)],
+			@"createViewHierarchyImpl is deprecated and will not be called. Override willStartWithViewController"
+		);
+		NSAssert(![self respondsToSelector:@selector(createViewHierarchy)],
+			@"createViewHierarchy is deprecated and will not be implemented. Use createUI"
+		);
+	}
+	return self;
+}
+
 
 - (void)setWindow:(id)object		{}
 - (UIWindow*)window					{ return _window; }
 
 
-
 - (void)shouldAttachRenderDelegate	{}
 - (void)preStartUnity				{}
 
-//admob
-- (void)adView:(GADBannerView *)bannerView didFailToReceiveAdWithError:(GADRequestError *)error {
-   // NSLog("aA","aa");//(@”aa”);
-    int i=0;
-    i++;
-}
 
-
-//iad
-- (void)bannerViewActionDidFinish:(ADBannerView *)banner{
-    NSLog(@"bannerview was selected");
-}
-
-- (BOOL)bannerViewActionShouldBegin:(ADBannerView *)banner willLeaveApplication:(BOOL)willLeave
-{
-    return willLeave;
-}
-
-- (void)bannerViewDidLoadAd:(ADBannerView *)baner
-{
-    if (!self.bannerIsVisible)
-    {
-        NSLog(@"\nBanner Success");
-        [UIView beginAnimations:@"animateAdBannerOn" context:NULL];
-        // assumes the banner view is offset 50 pixels so that it is not visible.
-        
-        baner.frame = CGRectOffset(baner.frame,0,-94);
-        [UIView commitAnimations];
-        
-        self.bannerIsVisible = YES;
-    }
-}
-
-- (void)bannerView:(ADBannerView *)baner didFailToReceiveAdWithError:(NSError *)error
-{
-        if (!self.isShowAdmob)
-        {
-           isShowAdmob = true;
-           [self showAdmob];//here
-            
-        }
-
-    if (self.bannerIsVisible)
-    {
-        NSLog(@"\nBanner Failed");
-        [UIView beginAnimations:@"animateAdBannerOff" context:NULL];
-        
-        baner.frame = CGRectOffset(baner.frame, 0, 94);
-        [UIView commitAnimations];
-        
-        self.bannerIsVisible = NO;
-    }
-}
-//- (void)bannerView:(ADBannerView *)baner interstitialDidReceiveAd:(NSError *)error
-- (void)interstitialDidReceiveAd:(GADInterstitial *)interstitial
-{
-    [interstitial_ presentFromRootViewController:_rootController];
-    
-  //      self.bannerIsVisible = NO;
-  
-}
-- (void)interstitial:(GADInterstitial *)interstitial didFailToReceiveAdWithError:(GADRequestError *)error{
-    
-}
-
-//banner : ca-app-pub-7342700401302892/4468600167
-// full : ca-app-pub-7342700401302892/2628816565
--(void) showAdmob
-{    
-    bannerView_ = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];//here
-    bannerView_.adUnitID = @"ca-app-pub-7342700401302892/4468600167";//admob caogiaqn
-    // Let the runtime know which UIViewController to restore after taking
-    // the user wherever the ad goes and add it to the view hierarchy.
-    bannerView_.rootViewController = _rootController;
-    [_rootView addSubview:bannerView_];
-    [bannerView_ setFrame:CGRectMake(_rootView.bounds.size.width - bannerView_.bounds.size.width,  _rootView.bounds.size.height -  bannerView_.bounds.size.height,  bannerView_.bounds.size.width,bannerView_.bounds.size.height)];
-    // Initiate a generic request to load it with an ad.
-    [bannerView_ setDelegate:self];
-    [bannerView_ loadRequest:[GADRequest request]];
-}
--(void) showAdmobFullAds
-{
-    interstitial_ = [[GADInterstitial alloc] init];
-    interstitial_.adUnitID = @"ca-app-pub-7342700401302892/2628816565";
-
-    [interstitial_ setDelegate:self];
-   // interstitial_.delegate = self;
-    [interstitial_ loadRequest:[GADRequest request]];
-}
-- (void) showiAd
-{
-    // Specify the ad unit ID.
-    iAdBannerView = [[ADBannerView alloc] initWithFrame:CGRectZero];
-    [iAdBannerView setFrame:CGRectMake(_rootView.bounds.size.width - iAdBannerView.bounds.size.width,  _rootView.bounds.size.height -  iAdBannerView.bounds.size.height,  iAdBannerView.bounds.size.width,bannerView_.bounds.size.height)];
-    [iAdBannerView setAutoresizingMask:UIViewAutoresizingFlexibleHeight];
-    [iAdBannerView setDelegate:self];
-    [self.unityView addSubview:iAdBannerView];
-    //dich chuyen truoc
-    [UIView beginAnimations:@"animateAdBannerOff" context:NULL];
-    iAdBannerView.frame = CGRectOffset(iAdBannerView.frame, 0, 94);
-    [UIView commitAnimations];
-    bannerIsVisible = false;
-    
-    isShowAdmob = false;//here
-}
-extern "C" {//here
-    
-	void NaticeShowAdsBanner (const char* phoneNumber, const char* bodyText)// chua dung vi dung thang trong 
-	{
-
-        //[GetAppController() OpenSMS];
-      //  [GetAppController() showAdmobFullAds];
-		//NSLog(@"Your message here end");
-	}
-		void NaticeShowAds(const char* phoneNumber, const char* bodyText)
-	{
-
-        //[GetAppController() OpenSMS];
-        [GetAppController() showAdmobFullAds];
-		NSLog(@"Your message here end");
-	}
-    void NaticeStopAds (const char* phoneNumber, const char* bodyText)
-	{
-        
-    }
-    
-}
-
-- (void)Open_SMS:(NSString *)phoneNumber second:(NSString *)bodyText
-{
-   
-}
 - (void)startUnity:(UIApplication*)application
 {
+	NSAssert(_unityAppReady == NO, @"[UnityAppController startUnity:] called after Unity has been initialized");
+
 	UnityInitApplicationGraphics();
 
 	// we make sure that first level gets correct display list and orientation
 	[[DisplayManager Instance] updateDisplayListInUnity];
-	[self updateOrientationFromController:[SplashScreenController Instance]];
 
 	UnityLoadApplication();
 	Profiler_InitProfiler();
 
 	[self showGameUI];
-	[self showiAd];//here
 	[self createDisplayLink];
+
+	UnitySetPlayerFocus(1);
 }
 
-- (void)onForcedOrientation:(ScreenOrientation)orient
-{
-	[_unityView willRotateTo:orient];
-	OrientView(_rootController, _rootView, orient);
-	[_rootView layoutSubviews];
-	[_unityView didRotate];
-}
-
-- (NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
+- (NSUInteger)application:(UIApplication*)application supportedInterfaceOrientationsForWindow:(UIWindow*)window
 {
 	// UIInterfaceOrientationMaskAll
 	// it is the safest way of doing it:
@@ -291,66 +171,79 @@ extern "C" {//here
 	return YES;
 }
 
+-(BOOL)application:(UIApplication*)application willFinishLaunchingWithOptions:(NSDictionary*)launchOptions
+{
+	return YES;
+}
+
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
-	printf_console("-> applicationDidFinishLaunching()\n");
-	// get local notification
-	if (&UIApplicationLaunchOptionsLocalNotificationKey != nil)
-	{
-		UILocalNotification *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-		if (notification)
-			UnitySendLocalNotification(notification);
-	}
+	::printf("-> applicationDidFinishLaunching()\n");
 
-	// get remote notification
-	if (&UIApplicationLaunchOptionsRemoteNotificationKey != nil)
-	{
-		NSDictionary *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-		if (notification)
-			UnitySendRemoteNotification(notification);
-	}
+	// send notfications
+	if(UILocalNotification* notification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey])
+		UnitySendLocalNotification(notification);
+
+	if(NSDictionary* notification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey])
+		UnitySendRemoteNotification(notification);
 
 	if ([UIDevice currentDevice].generatesDeviceOrientationNotifications == NO)
 		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 
+	UnityInitApplicationNoGraphics([[[NSBundle mainBundle] bundlePath] UTF8String]);
+
+	[self selectRenderingAPI];
+	[UnityRenderingView InitializeForAPI:self.renderingAPI];
+
+	_window			= [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	_unityView		= [self createUnityView];
+
 	[DisplayManager Initialize];
+	_mainDisplay	= [DisplayManager Instance].mainDisplay;
+	[_mainDisplay createWithWindow:_window andView:_unityView];
 
-	_mainDisplay	= [[[DisplayManager Instance] mainDisplay] createView:YES showRightAway:NO];
-	_window			= _mainDisplay->window;
-
-	[KeyboardDelegate Initialize];
-
-	[self createViewHierarchy];
+	[self createUI];
 	[self preStartUnity];
-	UnityInitApplicationNoGraphics([[[NSBundle mainBundle] bundlePath]UTF8String]);
+
+	// if you wont use keyboard you may comment it out at save some memory
+	[KeyboardDelegate Initialize];
 
 	return YES;
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
+- (void)applicationDidEnterBackground:(UIApplication*)application
 {
-	printf_console("-> applicationDidEnterBackground()\n");
+	::printf("-> applicationDidEnterBackground()\n");
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application
+- (void)applicationWillEnterForeground:(UIApplication*)application
 {
-	printf_console("-> applicationWillEnterForeground()\n");
+	::printf("-> applicationWillEnterForeground()\n");
 
-	// if we were showing video before going to background - the view size may be changed while we are in background
-	[GetAppController().unityView recreateGLESSurfaceIfNeeded];
+	// applicationWillEnterForeground: might sometimes arrive *before* actually initing unity (e.g. locking on startup)
+	if(_unityAppReady)
+	{
+		// if we were showing video before going to background - the view size may be changed while we are in background
+		[GetAppController().unityView recreateGLESSurfaceIfNeeded];
+	}
 }
 
 - (void)applicationDidBecomeActive:(UIApplication*)application
 {
-	printf_console("-> applicationDidBecomeActive()\n");
+	::printf("-> applicationDidBecomeActive()\n");
 
 	if(_unityAppReady)
 	{
-		if(_didResignActive)
-			UnityPause(false);
+		if(UnityIsPaused())
+		{
+			UnityPause(0);
+			UnityWillResume();
+		}
+		UnitySetPlayerFocus(1);
 	}
-	else
+	else if(!_startUnityScheduled)
 	{
+		_startUnityScheduled = true;
 		[self performSelector:@selector(startUnity:) withObject:application afterDelay:0];
 	}
 
@@ -359,19 +252,28 @@ extern "C" {//here
 
 - (void)applicationWillResignActive:(UIApplication*)application
 {
-	printf_console("-> applicationWillResignActive()\n");
+	::printf("-> applicationWillResignActive()\n");
 
 	if(_unityAppReady)
 	{
-		UnityPause(true);
+		UnityOnApplicationWillResignActive();
+		UnitySetPlayerFocus(0);
 
-		extern void UnityStopVideoIfPlaying();
-		UnityStopVideoIfPlaying();
+		// do pause unity only if we dont need special background processing
+		// otherwise batched player loop can be called to run user scripts
 
-		// Force player to do one more frame, so scripts get a chance to render custom screen for
-		// minimized app in task manager.
-		UnityForcedPlayerLoop();
-		[self repaintDisplayLink];
+		int bgBehavior = UnityGetAppBackgroundBehavior();
+		if(bgBehavior == appbgSuspend || bgBehavior == appbgExit)
+		{
+			UnityWillPause();
+
+			// Force player to do one more frame, so scripts get a chance to render custom screen for
+			// minimized app in task manager.
+			UnityPlayerLoop();
+			[self repaintDisplayLink];
+
+			UnityPause(1);
+		}
 	}
 
 	_didResignActive = true;
@@ -379,43 +281,22 @@ extern "C" {//here
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication*)application
 {
-	printf_console("WARNING -> applicationDidReceiveMemoryWarning()\n");
+	::printf("WARNING -> applicationDidReceiveMemoryWarning()\n");
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application
 {
-	printf_console("-> applicationWillTerminate()\n");
+	::printf("-> applicationWillTerminate()\n");
 
 	Profiler_UninitProfiler();
 	UnityCleanup();
-}
 
-- (void)dealloc
-{
 	extern void SensorsCleanup();
 	SensorsCleanup();
-
-	[self releaseViewHierarchy];
-   bannerView_.delegate = nil;    
-    // Don't release the bannerView_ if you are using ARC in your project
-    [bannerView_ release];
-	[super dealloc];
 }
+
 @end
 
-
-void AppController_RenderPluginMethod(SEL method)
-{
-	id delegate = GetAppController().renderDelegate;
-	if([delegate respondsToSelector:method])
-		[delegate performSelector:method];
-}
-void AppController_RenderPluginMethodWithArg(SEL method, id arg)
-{
-	id delegate = GetAppController().renderDelegate;
-	if([delegate respondsToSelector:method])
-		[delegate performSelector:method withObject:arg];
-}
 
 void AppController_SendNotification(NSString* name)
 {
@@ -425,11 +306,15 @@ void AppController_SendNotificationWithArg(NSString* name, id arg)
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:name object:GetAppController() userInfo:arg];
 }
+void AppController_SendUnityViewControllerNotification(NSString* name)
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:name object:UnityGetGLViewController()];
+}
 
-extern "C" UIWindow*			UnityGetMainWindow()		{ return GetAppController().mainDisplay->window; }
+extern "C" UIWindow*			UnityGetMainWindow()		{ return GetAppController().mainDisplay.window; }
 extern "C" UIViewController*	UnityGetGLViewController()	{ return GetAppController().rootViewController; }
 extern "C" UIView*				UnityGetGLView()			{ return GetAppController().unityView; }
-extern "C" ScreenOrientation	UnityCurrentOrientation()	{ return [GetAppController().unityView contentOrientation]; }
+extern "C" ScreenOrientation	UnityCurrentOrientation()	{ return GetAppController().unityView.contentOrientation; }
 
 
 
@@ -446,21 +331,22 @@ void UnityInitTrampoline()
 #endif
 	InitCrashHandling();
 
-	_ios42orNewer = [[[UIDevice currentDevice] systemVersion] compare: @"4.2" options: NSNumericSearch] != NSOrderedAscending;
-	_ios43orNewer = [[[UIDevice currentDevice] systemVersion] compare: @"4.3" options: NSNumericSearch] != NSOrderedAscending;
-	_ios50orNewer = [[[UIDevice currentDevice] systemVersion] compare: @"5.0" options: NSNumericSearch] != NSOrderedAscending;
-	_ios60orNewer = [[[UIDevice currentDevice] systemVersion] compare: @"6.0" options: NSNumericSearch] != NSOrderedAscending;
-	_ios70orNewer = [[[UIDevice currentDevice] systemVersion] compare: @"7.0" options: NSNumericSearch] != NSOrderedAscending;
-	_ios80orNewer = [[[UIDevice currentDevice] systemVersion] compare: @"8.0" options: NSNumericSearch] != NSOrderedAscending;
+	NSString* version = [[UIDevice currentDevice] systemVersion];
+
+	// keep native plugin developers happy and keep old bools around
+	_ios42orNewer = true;
+	_ios43orNewer = true;
+	_ios50orNewer = true;
+	_ios60orNewer = true;
+	_ios70orNewer = [version compare: @"7.0" options: NSNumericSearch] != NSOrderedAscending;
+	_ios80orNewer = [version compare: @"8.0" options: NSNumericSearch] != NSOrderedAscending;
+	_ios81orNewer = [version compare: @"8.1" options: NSNumericSearch] != NSOrderedAscending;
+	_ios82orNewer = [version compare: @"8.2" options: NSNumericSearch] != NSOrderedAscending;
 
 	// Try writing to console and if it fails switch to NSLog logging
-	fprintf(stdout, "\n");
-	if (ftell(stdout) < 0)
-		SetLogEntryHandler(LogToNSLogHandler);
+	::fprintf(stdout, "\n");
+	if(::ftell(stdout) < 0)
+		UnitySetLogEntryHandler(LogToNSLogHandler);
 
-    // Fix home directory environment variable.
-    const char *newHomeDirectory = ([[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] UTF8String]);
-    setenv("XDG_CONFIG_HOME", newHomeDirectory, 1);
-    
 	UnityInitJoysticks();
 }

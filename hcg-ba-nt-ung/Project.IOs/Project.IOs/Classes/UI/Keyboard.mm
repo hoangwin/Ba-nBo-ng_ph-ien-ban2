@@ -1,6 +1,6 @@
 #include "Keyboard.h"
 #include "DisplayManager.h"
-
+#include "UnityForwardDecls.h"
 #include <string>
 
 
@@ -12,8 +12,6 @@ static KeyboardDelegate*	_keyboard = nil;
 
 static bool					_shouldHideInput = false;
 static bool					_shouldHideInputChanged = false;
-
-extern "C" float UnityDeviceDPI();
 
 @implementation KeyboardDelegate
 {
@@ -84,7 +82,7 @@ extern "C" float UnityDeviceDPI();
 	if(textView)
 		textView.hidden = YES;
 
-	_active = NO;
+	_active = [self isInputViewStillEditing];
 }
 
 - (void)keyboardDidChangeFrame:(NSNotification*)notification;
@@ -96,7 +94,7 @@ extern "C" float UnityDeviceDPI();
 
 	if( rect.origin.y >= [UnityGetGLView() bounds].size.height )
 	{
-		_active  = NO;
+		_active = [self isInputViewStillEditing];
 		toolbar.hidden = YES;
 
 		if(textView)
@@ -142,17 +140,18 @@ extern "C" float UnityDeviceDPI();
 
 		toolbar = [[UIToolbar alloc] initWithFrame :CGRectMake(0,160,320,64)];
 		toolbar.hidden = YES;
+		UnitySetViewTouchProcessing(toolbar, touchesIgnored);
 
 		UIBarButtonItem* inputItem	= [[UIBarButtonItem alloc] initWithCustomView:textField];
 		UIBarButtonItem* doneItem	= [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemDone target:self action:@selector(textInputDone:)];
 		UIBarButtonItem* cancelItem	= [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemCancel target:self action:@selector(textInputCancel:)];
 
-		viewToolbarItems	= [[NSArray alloc] initWithObjects:doneItem, cancelItem, nil];
-		fieldToolbarItems	= [[NSArray alloc] initWithObjects:inputItem, doneItem, cancelItem, nil];
+		viewToolbarItems	= @[doneItem, cancelItem];
+		fieldToolbarItems	= @[inputItem, doneItem, cancelItem];
 
-		[inputItem release];
-		[doneItem release];
-		[cancelItem release];
+		inputItem = nil;
+		doneItem = nil;
+		cancelItem = nil;
 
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
@@ -219,12 +218,8 @@ extern "C" float UnityDeviceDPI();
 	[inputView resignFirstResponder];
 
 	if(multiline)
-	{
-		[inputView retain];
 		[inputView removeFromSuperview];
-	}
 
-	[toolbar retain];
 	[toolbar removeFromSuperview];
 
 	_done = YES;
@@ -240,6 +235,7 @@ extern "C" float UnityDeviceDPI();
 
 	textField.returnKeyType = _inputHidden ? UIReturnKeyDone : UIReturnKeyDefault;
 	toolbar.hidden = _inputHidden ? YES : NO;
+	inputView.hidden = _inputHidden ? YES : NO;
 }
 
 - (void)positionInput:(CGRect)kbRect x:(float)x y:(float)y
@@ -253,7 +249,6 @@ extern "C" float UnityDeviceDPI();
 
 		toolbar.frame		= CGRectMake(0, y - kInputBarSize, kbRect.size.width, kInputBarSize);
 		inputView.frame		= CGRectMake(0, y - kInputBarSize - height,kbRect.size.width, height);
-		inputView.hidden	= NO;
 	}
 	else
 	{
@@ -277,27 +272,35 @@ extern "C" float UnityDeviceDPI();
 
 + (void)StartReorientation
 {
-	if(_keyboard && _keyboard.active)
+	[CATransaction begin];
 	{
-		if( _keyboard->multiline )
-			_keyboard->inputView.hidden = YES;
+		if(_keyboard && _keyboard.active)
+		{
+			if( _keyboard->multiline )
+				_keyboard->inputView.hidden = YES;
 
-		_keyboard->toolbar.hidden = YES;
+			_keyboard->toolbar.hidden = YES;
+		}
 	}
+	[CATransaction commit];
 }
 
 + (void)FinishReorientation
 {
-	if(_keyboard && _keyboard.active)
+	[CATransaction begin];
 	{
-		if( _keyboard->multiline )
-			_keyboard->inputView.hidden = NO;
+		if(_keyboard && _keyboard.active)
+		{
+			if( _keyboard->multiline )
+				_keyboard->inputView.hidden = NO;
 
-		_keyboard->toolbar.hidden = NO;
+			_keyboard->toolbar.hidden = NO;
 
-		[_keyboard->inputView resignFirstResponder];
-		[_keyboard->inputView becomeFirstResponder];
+			[_keyboard->inputView resignFirstResponder];
+			[_keyboard->inputView becomeFirstResponder];
+		}
 	}
+	[CATransaction commit];
 }
 
 - (NSString*)getText
@@ -306,17 +309,31 @@ extern "C" float UnityDeviceDPI();
 	else			return multiline ? [textView text] : [textField text];
 }
 
+- (void) setTextWorkaround:(id<UITextInput>)textInput text:(NSString*)newText
+{
+	UITextPosition* begin = [textInput beginningOfDocument];
+	UITextPosition* end = [textInput endOfDocument];
+	UITextRange* allText = [textInput textRangeFromPosition:begin toPosition:end];
+	[textInput setSelectedTextRange:allText];
+	[textInput insertText:newText];
+}
+
 - (void)setText:(NSString*)newText
 {
-	if(multiline)   [textView setText: newText];
-	else            [textField setText: newText];
+	// We can't use setText on iOS7 because it does not update the undo stack.
+	// We still prefer setText on other iOSes, because an undo operation results
+	// in a smaller selection shown on the UI
+	if (_ios70orNewer && !_ios80orNewer)
+		[self setTextWorkaround: (multiline ? textView : textField) text:newText];
+
+	if (multiline)
+		[textView setText:newText];
+	else
+		[textField setText:newText];
 }
 
 - (void)shouldHideInput:(BOOL)hide
 {
-	if(multiline)
-		hide = NO;
-
 	if(hide)
 	{
 		switch(keyboardType)
@@ -336,6 +353,15 @@ extern "C" float UnityDeviceDPI();
 	_inputHidden = hide;
 }
 
+// Case 665265: on Chinese/Japanese keyboards when opening the suggestions popup
+// and scrolling the list, the keyboard will dismiss.
+// The popup opening triggers a keyboard hide by the OS but the text field still
+// remains in editing mode. Therefore Unity keyboard should remain active if the
+// text field is still first responder.
+- (BOOL)isInputViewStillEditing {
+    return inputView.isFirstResponder;
+}
+
 @end
 
 
@@ -344,7 +370,7 @@ extern "C" float UnityDeviceDPI();
 //
 //  Unity Interface:
 
-void UnityKeyboard_Show(unsigned keyboardType, bool autocorrection, bool multiline, bool secure, bool alert, const char* text, const char* placeholder)
+extern "C" void UnityKeyboard_Show(unsigned keyboardType, int autocorrection, int multiline, int secure, int alert, const char* text, const char* placeholder)
 {
 	static const UIKeyboardType keyboardTypes[] =
 	{
@@ -374,15 +400,15 @@ void UnityKeyboard_Show(unsigned keyboardType, bool autocorrection, bool multili
 	{
 		text, placeholder,
 		keyboardTypes[keyboardType],
-		autocorrectionTypes[autocorrection ? 0 : 1],
-		keyboardAppearances[alert ? 1 : 0],
-		multiline, secure
+		autocorrectionTypes[autocorrection],
+		keyboardAppearances[alert],
+		(BOOL)multiline, (BOOL)secure
 	};
 
 	[[KeyboardDelegate Instance] show:param];
 }
 
-void UnityKeyboard_Hide()
+extern "C" void UnityKeyboard_Hide()
 {
 	// do not send hide if didnt create keyboard
 	// TODO: probably assert?
@@ -392,32 +418,32 @@ void UnityKeyboard_Hide()
 	[[KeyboardDelegate Instance] hide];
 }
 
-void UnityKeyboard_SetText(const char* text)
+extern "C" void UnityKeyboard_SetText(const char* text)
 {
 	[KeyboardDelegate Instance].text = [NSString stringWithUTF8String: text];
 }
 
-void UnityKeyboard_GetText(std::string* text)
+extern "C" NSString* UnityKeyboard_GetText()
 {
-	*text = [[KeyboardDelegate Instance].text UTF8String];
+	return [KeyboardDelegate Instance].text;
 }
 
-bool UnityKeyboard_IsActive()
+extern "C" int UnityKeyboard_IsActive()
 {
-	return _keyboard && _keyboard.active;
+	return (_keyboard && _keyboard.active) ? 1 : 0;
 }
 
-bool UnityKeyboard_IsDone()
+extern "C" int UnityKeyboard_IsDone()
 {
-	return _keyboard && _keyboard.done;
+	return (_keyboard && _keyboard.done) ? 1 : 0;
 }
 
-bool UnityKeyboard_WasCanceled()
+extern "C" int UnityKeyboard_WasCanceled()
 {
-	return _keyboard && _keyboard.canceled;
+	return (_keyboard && _keyboard.canceled) ? 1 : 0;
 }
 
-void UnityKeyboard_SetInputHidden(bool hidden)
+extern "C" void UnityKeyboard_SetInputHidden(int hidden)
 {
 	_shouldHideInput		= hidden;
 	_shouldHideInputChanged	= true;
@@ -427,19 +453,19 @@ void UnityKeyboard_SetInputHidden(bool hidden)
 		[_keyboard updateInputHidden];
 }
 
-bool UnityKeyboard_IsInputHidden()
+extern "C" int UnityKeyboard_IsInputHidden()
 {
-	return _shouldHideInput;
+	return _shouldHideInput ? 1 : 0;
 }
 
-void UnityKeyboard_GetRect(float* x, float* y, float* w, float* h)
+extern "C" void UnityKeyboard_GetRect(float* x, float* y, float* w, float* h)
 {
 	CGRect area = _keyboard ? _keyboard.area : CGRectMake(0,0,0,0);
 
 	// convert to unity coord system
 
-	float	multX	= (float)GetMainRenderingSurface()->targetW / UnityGetGLView().bounds.size.width;
-	float	multY	= (float)GetMainRenderingSurface()->targetH / UnityGetGLView().bounds.size.height;
+	float	multX	= (float)GetMainDisplaySurface()->targetW / UnityGetGLView().bounds.size.width;
+	float	multY	= (float)GetMainDisplaySurface()->targetH / UnityGetGLView().bounds.size.height;
 
 	*x = 0;
 	*y = area.origin.y * multY;
