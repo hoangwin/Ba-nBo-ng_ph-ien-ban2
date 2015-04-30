@@ -1,0 +1,2 @@
+ESRB:https://autoratingtool.esrb.org/ARTclient/WindowsPhone.aspx
+PEGI:https://wp-rating.pegi.eu/Games/Submit

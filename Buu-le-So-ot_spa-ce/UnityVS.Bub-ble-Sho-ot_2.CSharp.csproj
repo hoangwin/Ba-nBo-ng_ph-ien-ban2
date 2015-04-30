@@ -1,0 +1,347 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3D803803-415D-0FF3-F461-C3576EBB2BB2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace></RootNamespace>
+    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
+    <CompilerResponseFile></CompilerResponseFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Temp\UnityVS_bin\Debug\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DefineConstants>DEBUG;TRACE;UNITY_4_5_4;UNITY_4_5;UNITY_WP8;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_LAZY_METHOD_CACHING;ENABLE_AUDIO_FMOD;ENABLE_TERRAIN;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;UNITY_WINRT;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_SERIALIZATION_BY_CODEGENERATION;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Temp\UnityVS_bin\Release\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DefineConstants>TRACE;UNITY_4_5_4;UNITY_4_5;UNITY_WP8;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_LAZY_METHOD_CACHING;ENABLE_AUDIO_FMOD;ENABLE_TERRAIN;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;UNITY_WINRT;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_SERIALIZATION_BY_CODEGENERATION;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Core" />
+    <Reference Include="Boo.Lang" />
+    <Reference Include="UnityScript.Lang" />
+    <Reference Include="UnityEngine">
+      <HintPath>Library\UnityAssemblies\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor">
+      <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="UnityVS.Bub-ble-Sho-ot_2.CSharp.Plugins.csproj">
+      <Project>{974EE41E-5DBC-8DF0-04F4-19A7E215E602}</Project>
+      <Name>UnityVS.Bub-ble-Sho-ot_2.CSharp.Plugins</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\JMO Assets\Cartoon FX\Scripts\CFX2_AutoRotate.cs" />
+    <Compile Include="Assets\JMO Assets\Cartoon FX\Scripts\CFX_AutoDestructShuriken.cs" />
+    <Compile Include="Assets\JMO Assets\Cartoon FX\Scripts\CFX_AutoRotate.cs" />
+    <Compile Include="Assets\JMO Assets\Cartoon FX\Scripts\CFX_AutodestructWhenNoChildren.cs" />
+    <Compile Include="Assets\JMO Assets\Cartoon FX\Scripts\CFX_LightIntensityFade.cs" />
+    <Compile Include="Assets\JMO Assets\Cartoon FX\Scripts\CFX_ShurikenThreadFix.cs" />
+    <Compile Include="Assets\JMO Assets\Cartoon FX\Spawn System\CFX_SpawnSystem.cs" />
+    <Compile Include="Assets\LeanTween\Plugins\LeanTween.cs" />
+    <Compile Include="Assets\MyAds\ButtonAds.cs" />
+    <Compile Include="Assets\MyAds\MyAds.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\LanguageSelection.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\TypewriterEffect.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIButton.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIButtonActivate.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIButtonColor.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIButtonKeys.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIButtonMessage.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIButtonOffset.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIButtonRotation.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIButtonScale.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UICenterOnChild.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UICenterOnClick.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIDragCamera.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIDragDropContainer.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIDragDropItem.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIDragDropRoot.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIDragObject.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIDragResize.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIDragScrollView.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIDraggableCamera.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIEventTrigger.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIForwardEvents.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIGrid.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIImageButton.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIKeyBinding.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIKeyNavigation.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIPlayAnimation.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIPlaySound.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIPlayTween.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIPopupList.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIProgressBar.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UISavedOption.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIScrollBar.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIScrollView.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UISlider.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UISoundVolume.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UITable.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIToggle.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIToggledComponents.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIToggledObjects.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIWidgetContainer.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIWrapContent.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\ActiveAnimation.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\AnimationOrTween.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\BMFont.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\BMGlyph.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\BMSymbol.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\BetterList.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\ByteReader.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\EventDelegate.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\Localization.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\NGUIDebug.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\NGUIMath.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\NGUIText.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\NGUITools.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\PropertyBinding.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\PropertyReference.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\RealTime.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\SpringPanel.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\UIBasicSprite.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\UIDrawCall.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\UIEventListener.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\UIGeometry.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\UIRect.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\UISnapshotPoint.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Internal\UIWidget.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\AnimatedAlpha.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\AnimatedColor.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\SpringPosition.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenAlpha.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenColor.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenFOV.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenHeight.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenOrthoSize.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenPosition.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenRotation.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenScale.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenTransform.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenVolume.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenWidth.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\UITweener.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UI2DSprite.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UI2DSpriteAnimation.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UIAnchor.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UIAtlas.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UICamera.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UIFont.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UIInput.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UILabel.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UILocalize.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UIOrthoCamera.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UIPanel.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UIRoot.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UISprite.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UISpriteAnimation.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UISpriteData.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UIStretch.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UITextList.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UITexture.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UITooltip.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UIViewport.cs" />
+    <Compile Include="Assets\Scripts\About.cs" />
+    <Compile Include="Assets\Scripts\Bubble.cs" />
+    <Compile Include="Assets\Scripts\BubbleAnimEffect.cs" />
+    <Compile Include="Assets\Scripts\BubbleAnimEvent.cs" />
+    <Compile Include="Assets\Scripts\BubbleListParent.cs" />
+    <Compile Include="Assets\Scripts\BubbleMainMenu.cs" />
+    <Compile Include="Assets\Scripts\BubbleType.cs" />
+    <Compile Include="Assets\Scripts\ButtonControl.cs" />
+    <Compile Include="Assets\Scripts\Effect.cs" />
+    <Compile Include="Assets\Scripts\Engine\DEF.cs" />
+    <Compile Include="Assets\Scripts\Engine\PlayerPrefsX.cs" />
+    <Compile Include="Assets\Scripts\Engine\ScoreControl.cs" />
+    <Compile Include="Assets\Scripts\Engine\SoundEngine.cs" />
+    <Compile Include="Assets\Scripts\GamePlay.cs" />
+    <Compile Include="Assets\Scripts\LevelManager.cs" />
+    <Compile Include="Assets\Scripts\MainMenu.cs" />
+    <Compile Include="Assets\Scripts\MoveCompletedHandle.cs" />
+    <Compile Include="Assets\Scripts\NativeCode\IOsStatic.cs" />
+    <Compile Include="Assets\Scripts\NativeCode\WP8Statics.cs" />
+    <Compile Include="Assets\Scripts\Raking.cs" />
+    <Compile Include="Assets\Scripts\SelectLevel\SelectLevelButton.cs" />
+    <Compile Include="Assets\Scripts\SelectLevel\SelectLevelScene.cs" />
+    <Compile Include="Assets\Scripts\SelectLevel\SelectLevels.cs" />
+    <Compile Include="Assets\Scripts\ShopManager.cs" />
+    <Compile Include="Assets\Scripts\TLib\ParticleScaler.cs" />
+    <Compile Include="Assets\Scripts\TLib\Sounds.cs" />
+    <Compile Include="Assets\Scripts\TLib\Sounds_GamePlay.cs" />
+    <Compile Include="Assets\Scripts\TLib\SuperArray2Int.cs" />
+    <Compile Include="Assets\Scripts\TLib\SuperArrayInt.cs" />
+    <Compile Include="Assets\Scripts\TLib\SuperInt.cs" />
+    <Compile Include="Assets\Scripts\TLib\SuperString.cs" />
+    <Compile Include="Assets\Scripts\TLib\TF.cs" />
+    <Compile Include="Assets\Scripts\TLib\TH.cs" />
+    <Compile Include="Assets\Scripts\TLib\TN.cs" />
+    <Compile Include="Assets\Scripts\TLib\TO.cs" />
+    <Compile Include="Assets\Scripts\TLib\TU.cs" />
+    <Compile Include="Assets\Scripts\Wall.cs" />
+    <None Include="Assets\JMO Assets\!JMO Assets Readme.txt" />
+    <None Include="Assets\JMO Assets\Cartoon FX\Shaders (Mobile)\CFXM_MobileParticleAdd_Alpha8.shader" />
+    <None Include="Assets\LeanTween\LeanTween-ReadMe.txt" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored 1.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored 2.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored 3.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Text 1.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Text 2.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Text 3.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Text.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored 1.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored 2.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored 3.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Colored.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 1.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 2.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 3.shader" />
+    <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed.shader" />
+    <None Include="Assets\plugins\Pixelplacement\iTween\ReadMe!\ReadMe!.txt" />
+    <None Include="Assets\Resources\Level\passunblock.txt" />
+    <None Include="Assets\Resources\Level2\infot.txt" />
+    <None Include="Assets\Resources\Level2\level1.txt" />
+    <None Include="Assets\Resources\Level2\level10.txt" />
+    <None Include="Assets\Resources\Level2\level100.txt" />
+    <None Include="Assets\Resources\Level2\level101.txt" />
+    <None Include="Assets\Resources\Level2\level102.txt" />
+    <None Include="Assets\Resources\Level2\level103.txt" />
+    <None Include="Assets\Resources\Level2\level104.txt" />
+    <None Include="Assets\Resources\Level2\level105.txt" />
+    <None Include="Assets\Resources\Level2\level106.txt" />
+    <None Include="Assets\Resources\Level2\level107.txt" />
+    <None Include="Assets\Resources\Level2\level108.txt" />
+    <None Include="Assets\Resources\Level2\level109.txt" />
+    <None Include="Assets\Resources\Level2\level11.txt" />
+    <None Include="Assets\Resources\Level2\level110.txt" />
+    <None Include="Assets\Resources\Level2\level111.txt" />
+    <None Include="Assets\Resources\Level2\level112.txt" />
+    <None Include="Assets\Resources\Level2\level113.txt" />
+    <None Include="Assets\Resources\Level2\level114.txt" />
+    <None Include="Assets\Resources\Level2\level115.txt" />
+    <None Include="Assets\Resources\Level2\level116.txt" />
+    <None Include="Assets\Resources\Level2\level117.txt" />
+    <None Include="Assets\Resources\Level2\level118.txt" />
+    <None Include="Assets\Resources\Level2\level12.txt" />
+    <None Include="Assets\Resources\Level2\level13.txt" />
+    <None Include="Assets\Resources\Level2\level14.txt" />
+    <None Include="Assets\Resources\Level2\level15.txt" />
+    <None Include="Assets\Resources\Level2\level16.txt" />
+    <None Include="Assets\Resources\Level2\level17.txt" />
+    <None Include="Assets\Resources\Level2\level18.txt" />
+    <None Include="Assets\Resources\Level2\level19.txt" />
+    <None Include="Assets\Resources\Level2\level2.txt" />
+    <None Include="Assets\Resources\Level2\level20.txt" />
+    <None Include="Assets\Resources\Level2\level21.txt" />
+    <None Include="Assets\Resources\Level2\level22.txt" />
+    <None Include="Assets\Resources\Level2\level23.txt" />
+    <None Include="Assets\Resources\Level2\level24.txt" />
+    <None Include="Assets\Resources\Level2\level25.txt" />
+    <None Include="Assets\Resources\Level2\level26.txt" />
+    <None Include="Assets\Resources\Level2\level27.txt" />
+    <None Include="Assets\Resources\Level2\level28.txt" />
+    <None Include="Assets\Resources\Level2\level29.txt" />
+    <None Include="Assets\Resources\Level2\level3.txt" />
+    <None Include="Assets\Resources\Level2\level30.txt" />
+    <None Include="Assets\Resources\Level2\level31.txt" />
+    <None Include="Assets\Resources\Level2\level32.txt" />
+    <None Include="Assets\Resources\Level2\level33.txt" />
+    <None Include="Assets\Resources\Level2\level34.txt" />
+    <None Include="Assets\Resources\Level2\level35.txt" />
+    <None Include="Assets\Resources\Level2\level36.txt" />
+    <None Include="Assets\Resources\Level2\level37.txt" />
+    <None Include="Assets\Resources\Level2\level38.txt" />
+    <None Include="Assets\Resources\Level2\level39.txt" />
+    <None Include="Assets\Resources\Level2\level4.txt" />
+    <None Include="Assets\Resources\Level2\level40.txt" />
+    <None Include="Assets\Resources\Level2\level41.txt" />
+    <None Include="Assets\Resources\Level2\level42.txt" />
+    <None Include="Assets\Resources\Level2\level43.txt" />
+    <None Include="Assets\Resources\Level2\level44.txt" />
+    <None Include="Assets\Resources\Level2\level45.txt" />
+    <None Include="Assets\Resources\Level2\level46.txt" />
+    <None Include="Assets\Resources\Level2\level47.txt" />
+    <None Include="Assets\Resources\Level2\level48.txt" />
+    <None Include="Assets\Resources\Level2\level49.txt" />
+    <None Include="Assets\Resources\Level2\level5.txt" />
+    <None Include="Assets\Resources\Level2\level50.txt" />
+    <None Include="Assets\Resources\Level2\level51.txt" />
+    <None Include="Assets\Resources\Level2\level52.txt" />
+    <None Include="Assets\Resources\Level2\level53.txt" />
+    <None Include="Assets\Resources\Level2\level54.txt" />
+    <None Include="Assets\Resources\Level2\level55.txt" />
+    <None Include="Assets\Resources\Level2\level56.txt" />
+    <None Include="Assets\Resources\Level2\level57.txt" />
+    <None Include="Assets\Resources\Level2\level58.txt" />
+    <None Include="Assets\Resources\Level2\level59.txt" />
+    <None Include="Assets\Resources\Level2\level6.txt" />
+    <None Include="Assets\Resources\Level2\level60.txt" />
+    <None Include="Assets\Resources\Level2\level61.txt" />
+    <None Include="Assets\Resources\Level2\level62.txt" />
+    <None Include="Assets\Resources\Level2\level63.txt" />
+    <None Include="Assets\Resources\Level2\level64.txt" />
+    <None Include="Assets\Resources\Level2\level65.txt" />
+    <None Include="Assets\Resources\Level2\level66.txt" />
+    <None Include="Assets\Resources\Level2\level67.txt" />
+    <None Include="Assets\Resources\Level2\level68.txt" />
+    <None Include="Assets\Resources\Level2\level69.txt" />
+    <None Include="Assets\Resources\Level2\level7.txt" />
+    <None Include="Assets\Resources\Level2\level70.txt" />
+    <None Include="Assets\Resources\Level2\level71.txt" />
+    <None Include="Assets\Resources\Level2\level72.txt" />
+    <None Include="Assets\Resources\Level2\level73.txt" />
+    <None Include="Assets\Resources\Level2\level74.txt" />
+    <None Include="Assets\Resources\Level2\level75.txt" />
+    <None Include="Assets\Resources\Level2\level76.txt" />
+    <None Include="Assets\Resources\Level2\level77.txt" />
+    <None Include="Assets\Resources\Level2\level78.txt" />
+    <None Include="Assets\Resources\Level2\level79.txt" />
+    <None Include="Assets\Resources\Level2\level8.txt" />
+    <None Include="Assets\Resources\Level2\level80.txt" />
+    <None Include="Assets\Resources\Level2\level81.txt" />
+    <None Include="Assets\Resources\Level2\level82.txt" />
+    <None Include="Assets\Resources\Level2\level83.txt" />
+    <None Include="Assets\Resources\Level2\level84.txt" />
+    <None Include="Assets\Resources\Level2\level85.txt" />
+    <None Include="Assets\Resources\Level2\level86.txt" />
+    <None Include="Assets\Resources\Level2\level87.txt" />
+    <None Include="Assets\Resources\Level2\level88.txt" />
+    <None Include="Assets\Resources\Level2\level89.txt" />
+    <None Include="Assets\Resources\Level2\level9.txt" />
+    <None Include="Assets\Resources\Level2\level90.txt" />
+    <None Include="Assets\Resources\Level2\level91.txt" />
+    <None Include="Assets\Resources\Level2\level92.txt" />
+    <None Include="Assets\Resources\Level2\level93.txt" />
+    <None Include="Assets\Resources\Level2\level94.txt" />
+    <None Include="Assets\Resources\Level2\level95.txt" />
+    <None Include="Assets\Resources\Level2\level96.txt" />
+    <None Include="Assets\Resources\Level2\level97.txt" />
+    <None Include="Assets\Resources\Level2\level98.txt" />
+    <None Include="Assets\Resources\Level2\level99.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />
+</Project>

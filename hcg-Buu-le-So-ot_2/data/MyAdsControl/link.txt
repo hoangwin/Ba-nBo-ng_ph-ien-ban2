@@ -1,0 +1,14 @@
+==================BAN TRUNG KHUNG LONG==========		
+echo "Ban Trung Khung Long|link IOS ne|Image ne\n";
+echo "Ban Trung Khung Long|link IOS ne|Image ne\n";
+echo "Ban Trung Khung Long|link IOS ne|Image ne\n";
+==================BAN TRUNG KHUNG LONG==========	
+echo "Tien Len Online|link IOS ne|Image ne\n";
+echo "Tien Len Online|link IOS ne|Image ne\n";
+echo "Tien Len Online|link IOS ne|Image ne\n";
+==================BAN TRUNG KHUNG LONG==========	
+echo "Ban ca An XU|link IOS ne|Image ne\n";
+echo "Ban ca An XU|link IOS ne|Image ne\n";
+echo "Ban ca An XU|link IOS ne|Image ne\n";
+		
+		

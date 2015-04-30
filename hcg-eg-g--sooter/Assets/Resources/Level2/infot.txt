@@ -1,0 +1,69 @@
+﻿chia sẻ tí cho anh em đang băn khoăn khoản nhận ma pin, t cung request 2 lần rồi chưa đc,vừa request lần 3 hôm 4/7, và nó đồng thời hiện cái thông báo là nếu trong vòng 4 tuần tới mà vần ko nhận đc ma pin thì điền thông tin theo cái form nó đưa, kèm ảnh cmt or hóa đơn điện thoại.... để sác thực,nhưng mình do sốt ruột nên hôm nay làm thoe lời bác @gr17 là thay đổi địa chỉ cho giống với cmt, ghi tiếng việt có dấu nhé, sau đó điền vào cái form ý, tên giống như trong cmt với publisher id, up cái ảnh chụp mặt trc cmt,nhấn send. khoảng chục phút sau là có email thông báo đa sác nhận địa chỉ, và không cần nhập ma pin nưa. Một lần nưa cảm ơn bác @gr17 về thông tin này
+
+Camera.main.aspect = 800f / 480;
+
+{serveballs:{balls:[2,5,31,8,6,0],oneline:1,lines:7}
+thu tu bong
+//
+0-8-> bong thuong
+9->16-> bong doi
+16-24-> bong lan
+9 //level 40
+10 //level 37
+11 //level 18
+12 //level 8,9 //bong doi -> ngau nhien cung loai
+13 //level 21
+14 //level 10
+15 //level 11
+16 //level 8,9 bong doi
+17 //level 15
+18 //level 25
+19 //level 14
+20 //level 13
+21 //level 16
+22 //level 16
+23 //level 20
+24 //level 14
++ 25 //level 3 //Cau vong 1? Se co value trung voi bat ki thang nao tren ban do( nneu gap 2 thang thi no se hop ca 2)
++ 26 //level 7 //Cau vong 2? No tat ca nhung thang co gia tri bang voi bong ma no va cham
+27 //level 12 // cuc go mau sang'
+28 //level 30 // cuc go mau den
++ 29 //level ? Do'ng Bang (khong cho di chuyen)
++ 30 //level 3 Bom thang hang
++ 31 //level ? Bom no nhung thang xung quanh
+32 //level 11  //ra bong gi(dau hoi)
+33 //level 10 bong trang (bong trong khong)
+34 //Level 10 coin
+35 //Level 41(Bong den)//here
+36 //Level 8 bong xanh->xanh Xoay-> tang mot hieu ung day
+37 //Hinh nguoi 
+38 //Ngoi Sao giong 39 
+39 //Ngoi Sao
+40 //Level 1 key
+41 //level 31 Cuc Da( se no chung voi cac cuc khac)
+42 //level ? 2 Ngoi sao (hien ko su dung)
+70 //level 37
+72//level 58
+73//level 80
+74//level 37
+75//level 11
+76//level 92
+77//level 19
+78//level 69
+79//level 104
+80//Level 5 thu'(dau cop)
+81//Level 48
+82//Level 19
+83//Level 117
+101 // bong hoa an thit
+201 //Level 13
+301 //Level 21
+401 //Level 30
+501//level 39
+601//level 49
+701//level 59
+801//level 71
+901//Level 81
+1001//level 93
+1101//level 105
+1201//level 118
