@@ -54,7 +54,7 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		instance = this;
 		layout = new FrameLayout(this);
 		layout.setPadding(0, 0, 0, 0);
-		//showAdmobAds( this);
+		showAdmobAds( this);
 	
 		layout.addView(mUnityPlayer);
 		//layout.addView(adView,adsParams);	
@@ -100,7 +100,7 @@ public static  int ShowAds()
 	
 	
 	static FrameLayout layout ;
-	static FrameLayout.LayoutParams adsParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, android.view.Gravity.TOP | android.view.Gravity.CENTER);
+	static FrameLayout.LayoutParams adsParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, android.view.Gravity.BOTTOM | android.view.Gravity.CENTER);
 	//public static LinearLayout layout;
 	public static AdView adView ;
 	public static boolean isFirstShowAdmob = true;
