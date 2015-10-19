@@ -24,13 +24,6 @@ public class UnityPlayerActivity extends Activity
 		getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
 
 		mUnityPlayer = new UnityPlayer(this);
-		if (mUnityPlayer.getSettings ().getBoolean ("hide_status_bar", true))
-		{
-			setTheme(android.R.style.Theme_NoTitleBar_Fullscreen);
-			getWindow ().setFlags (WindowManager.LayoutParams.FLAG_FULLSCREEN,
-			                       WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		}
-
 		setContentView(mUnityPlayer);
 		mUnityPlayer.requestFocus();
 	}

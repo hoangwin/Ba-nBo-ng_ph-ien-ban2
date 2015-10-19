@@ -23,7 +23,7 @@ public class MainMenu : MonoBehaviour {
 
         SoundEngine.getInstance().PlayLoop(SoundEngine.getInstance()._soundBG1);
         //Application.targetFrameRate = 60;
-        GamePlay.ShowADS();
+      //  GamePlay.ShowADS();
 	}	
 	// Update is called once per frame
 	void Update () {

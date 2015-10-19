@@ -343,7 +343,7 @@ public class GamePlay : MonoBehaviour {
     }
     public static void ShowADS()
     {
-        if (timeShowAds > 120 || !firstShowAds)
+        if (timeShowAds > 90 || !firstShowAds)
         {
             firstShowAds = true;
             timeShowAds = 0;
