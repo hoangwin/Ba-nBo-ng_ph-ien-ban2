@@ -1,25 +1,33 @@
-#ifndef _TRAMPOLINE_UNITY_EAGLCONTEXTHELPER_H_
-#define _TRAMPOLINE_UNITY_EAGLCONTEXTHELPER_H_
+#pragma once
+
+struct UnityDisplaySurfaceBase;
+
+#ifdef __OBJC__
+	@class EAGLContext;
+#else
+	typedef struct objc_object EAGLContext;
+#endif
+
 
 extern "C" bool AllocateRenderBufferStorageFromEAGLLayer(void* eaglContext, void* eaglLayer);
 extern "C" void DeallocateRenderBufferStorageFromEAGLLayer(void* eaglContext);
 
+extern "C" EAGLContext*	UnityCreateContextEAGL(EAGLContext* parent, int api);
+extern "C" void			UnityMakeCurrentContextEAGL(EAGLContext* context);
+extern "C" EAGLContext*	UnityGetCurrentContextEAGL();
+
 #if __OBJC__
 
-    @class EAGLContext;
-    EAGLContext*    CreateContext(EAGLContext* parent);
+class
+EAGLContextSetCurrentAutoRestore
+{
+public:
+	EAGLContext* old;
+	EAGLContext* cur;
 
-    class
-    EAGLContextSetCurrentAutoRestore
-    {
-    public:
-        EAGLContext* old;
-        EAGLContext* cur;
-
-        EAGLContextSetCurrentAutoRestore(EAGLContext* cur);
-        ~EAGLContextSetCurrentAutoRestore();
-    };
+	EAGLContextSetCurrentAutoRestore(EAGLContext* cur);
+	EAGLContextSetCurrentAutoRestore(UnityDisplaySurfaceBase* surface);
+	~EAGLContextSetCurrentAutoRestore();
+};
 
 #endif // __OBJC__
-
-#endif // _TRAMPOLINE_UNITY_EAGLCONTEXTHELPER_H_

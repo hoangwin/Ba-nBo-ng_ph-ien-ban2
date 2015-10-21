@@ -194,7 +194,7 @@ public class ButtonControl : MonoBehaviour
         if (ScoreControl.mThrough > 0 && GamePlay.currentState == GamePlay.STATE_PLAY && LevelManager.currentBubbleWaiting != null )
         {
             SoundEngine.getInstance().PlayOneShot(SoundEngine.getInstance()._soundBone);
-            LevelManager.currentBubbleWaiting.collider2D.isTrigger = true;
+            LevelManager.currentBubbleWaiting.GetComponent<Collider2D>().isTrigger = true;
             LevelManager.currentBubbleWaiting.GetComponent<Bubble>().setValue(BubbleType.BUBBLE_TYPE_SHOOT_BOOM_ROAD);
             ScoreControl.mThrough--;
             ScoreControl.saveGame();

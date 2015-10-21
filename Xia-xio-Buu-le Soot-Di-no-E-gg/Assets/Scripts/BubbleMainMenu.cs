@@ -16,6 +16,6 @@ public class BubbleMainMenu : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D collision)
 	{
         //SoundEngine.playSound("SoundBubble");
-		rigidbody2D.velocity = new Vector2(0f,Random.Range(min, max));//
+		GetComponent<Rigidbody2D>().velocity = new Vector2(0f,Random.Range(min, max));//
 	}
 }

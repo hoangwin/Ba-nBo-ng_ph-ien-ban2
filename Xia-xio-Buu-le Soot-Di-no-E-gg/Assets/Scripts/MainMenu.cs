@@ -21,8 +21,8 @@ public class MainMenu : MonoBehaviour {
         ShopManager.instance = GameShop.GetComponent<ShopManager>();
 
         SoundEngine.getInstance().PlayLoop(SoundEngine.getInstance()._soundBG1);
-        if (!GamePlay.firstShowAdsAtBegin)
-            GamePlay.ShowADS();
+      //  if (!GamePlay.firstShowAdsAtBegin)
+       //     GamePlay.ShowADS();
         //Application.targetFrameRate = 60;
 
 	}	

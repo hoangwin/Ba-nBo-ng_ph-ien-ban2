@@ -72,7 +72,7 @@ public class SoundEngine : MonoBehaviour {
        // if (!e..isPlaying)
             if (isSoundSFX)
             {
-                audio.PlayOneShot(e);
+                GetComponent<AudioSource>().PlayOneShot(e);
             }
     }
     // Update is called once per frame
@@ -81,18 +81,18 @@ public class SoundEngine : MonoBehaviour {
         
         if (isSoundMusic)
         {
-            if (audio != null && e != null)
+            if (GetComponent<AudioSource>() != null && e != null)
             {
-                audio.clip = e;
-                audio.loop = true;
-                if (!audio.isPlaying)
-                    audio.Play();
+                GetComponent<AudioSource>().clip = e;
+                GetComponent<AudioSource>().loop = true;
+                if (!GetComponent<AudioSource>().isPlaying)
+                    GetComponent<AudioSource>().Play();
             }
         }
     }
     public void stopSound()
     {
-        audio.Stop();
+        GetComponent<AudioSource>().Stop();
     }
 
 	// Update is called once per frame

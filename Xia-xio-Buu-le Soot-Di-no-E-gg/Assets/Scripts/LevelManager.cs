@@ -102,7 +102,7 @@ public class LevelManager {
                     bubble.setValue(value);
                     bubble.state = Bubble.STATE_BUBBLE_IDE;
 
-                    obj.rigidbody2D.isKinematic = true;
+                    obj.GetComponent<Rigidbody2D>().isKinematic = true;
                     bubbleTableArray[bubble.indexY, bubble.indexX] = bubble;
                     obj.transform.parent = GamePlay.instance.BubbleListParentObject.transform;
                     bubbleList.Add(obj);
