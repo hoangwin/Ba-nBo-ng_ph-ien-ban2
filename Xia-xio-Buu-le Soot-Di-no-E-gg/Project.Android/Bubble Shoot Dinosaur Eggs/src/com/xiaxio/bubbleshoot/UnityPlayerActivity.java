@@ -8,7 +8,7 @@ import com.startapp.android.publish.StartAppAd;
 import com.startapp.android.publish.StartAppSDK;
 import com.startapp.android.publish.banner.Banner;
 import com.unity3d.player.*;
-import android.app.NativeActivity;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
@@ -26,40 +26,40 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
+import com.facebook.ads.*;
 import com.chartboost.sdk.*;
 import com.chartboost.sdk.Libraries.CBLogging.Level;
 import com.chartboost.sdk.Model.CBError.CBClickError;
 import com.chartboost.sdk.Model.CBError.CBImpressionError;
-public class UnityPlayerNativeActivity extends NativeActivity
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class UnityPlayerActivity extends Activity
 {
-	protected UnityPlayer mUnityPlayer;		// don't change the name of this variable; referenced from native code
-	public static UnityPlayerNativeActivity instance;
+	com.facebook.ads.AdView adViewFaceBook;
+	protected UnityPlayer mUnityPlayer; // don't change the name of this variable; referenced from native code
+	public static UnityPlayerActivity instance;
 	//private InterstitialAd interstitial;
+	public  static com.facebook.ads.InterstitialAd interstitialFaceBook;
 	private StartAppAd startAppAd = new StartAppAd(this);
 	// Setup activity layout
 	@Override protected void onCreate (Bundle savedInstanceState)
 	{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
-		
+
 	    Chartboost.startWithAppId(this, "553f4baa43150f147ee74741", "89d929576c64876237bd9d229a96bff24a7515c7");//chartboost hoang...hotmail
 		Chartboost.setLoggingLevel(Level.ALL);
 		Chartboost.setDelegate(delegate);
 	    /* Optional: If you want to program responses to Chartboost events, supply a delegate object here and see step (10) for more information */
 	    //Chartboost.setDelegate(delegate);
 	    Chartboost.onCreate(this);
-		
-		getWindow().takeSurface(null);
-		setTheme(android.R.style.Theme_NoTitleBar_Fullscreen);
-		getWindow().setFormat(PixelFormat.RGB_565);
+		getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
 
 		mUnityPlayer = new UnityPlayer(this);
-		if (mUnityPlayer.getSettings ().getBoolean ("hide_status_bar", true))
-			getWindow ().setFlags (WindowManager.LayoutParams.FLAG_FULLSCREEN,
-			                       WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-	//	setContentView(mUnityPlayer);
+		View playerView = mUnityPlayer.getView();
+		//setContentView(mUnityPlayer);
+		
 		mUnityPlayer.requestFocus();
 		//UnityPlayer.UnitySendMessage("GameObjectName1", "MethodName1", "Message to send");
 		instance = this;
@@ -81,7 +81,7 @@ public class UnityPlayerNativeActivity extends NativeActivity
 		//StartAppAd.showSplash(this, savedInstanceState);
 		
 		setContentView(layout);
-		
+		showBannerFaceBook();
 
 	}
 /*public void ShowAdmobFull()
@@ -116,19 +116,110 @@ public class UnityPlayerNativeActivity extends NativeActivity
 	}
 public static  int ShowAds()
 {
-	ShowAdsBackup();
+	UnityPlayerActivity.loadInterstitialAdFaceBook(instance);
+//	ShowAdsBackup();
 //	instance.ShowAdmobFull();
 	return 1;
 }
-public static  int ShowAdsBackup()
+
+	public static int ShowAdsBackup()
 {
-		Chartboost.cacheInterstitial(CBLocation.LOCATION_DEFAULT);		
-		Chartboost.showInterstitial(CBLocation.LOCATION_DEFAULT);
+	Chartboost.cacheInterstitial(CBLocation.LOCATION_DEFAULT);
+	Chartboost.showInterstitial(CBLocation.LOCATION_DEFAULT);
 		return 1;
 }	
 	
 	static FrameLayout layout ;
 	public static FrameLayout.LayoutParams adsParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, android.view.Gravity.BOTTOM | android.view.Gravity.CENTER);
+	public void showBannerFaceBook()
+	{
+		adViewFaceBook = new com.facebook.ads.AdView(this, "1671197079789220_1671222949786633", com.facebook.ads.AdSize.BANNER_HEIGHT_50);
+		Collection<String> TestDevices = new ArrayList<String>();
+		TestDevices.add("403706e6d09a7de076ce069c9bc804ec");		
+		com.facebook.ads.AdSettings.addTestDevices(TestDevices);
+		com.facebook.ads.AdSettings.addTestDevice("2a2ab03d07ce6eaced63502d841a103e");
+		com.facebook.ads.AdSettings.addTestDevice("090021134d2dc35fe0e3dceb8b361de1");
+
+		layout.addView(adViewFaceBook,adsParams);
+		adViewFaceBook.setAdListener(new com.facebook.ads.AdListener() {
+
+			@Override
+			public void onError(com.facebook.ads.Ad ad, com.facebook.ads.AdError error) {
+				// Ad failed to load.
+				Log.d("aaa", "aa");
+				// Add code to hide the ad's view
+				//adViewFaceBook.dis
+				//showStarAppBanner();
+			}
+
+			@Override
+			public void onAdLoaded(com.facebook.ads.Ad ad) {
+				// Ad was loaded
+				// Add code to show the ad's view
+				Log.d("aaa", "bbb");//cai thu muc sdk nam cho nao??
+			}
+
+			@Override
+			public void onAdClicked(com.facebook.ads.Ad ad) {
+				// Use this function to detect when an ad was clicked.
+			}
+
+		});
+		adViewFaceBook.loadAd();
+
+
+	}
+
+	//test
+
+	public static void loadInterstitialAdFaceBook( UnityPlayerActivity activity)
+	{
+
+		Log.d("Admob", "MRAID InApp Ad is calling..");
+		UnityPlayer.currentActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Log.e("TOAN","ShowAds22222222");
+				Collection<String> TestDevices = new ArrayList<String>();
+				TestDevices.add("403706e6d09a7de076ce069c9bc804ec");
+				TestDevices.add("HASHED_ID_2");
+				com.facebook.ads.AdSettings.addTestDevices(TestDevices);
+				com.facebook.ads.AdSettings.addTestDevice("2a2ab03d07ce6eaced63502d841a103e");
+				com.facebook.ads.AdSettings.addTestDevice("090021134d2dc35fe0e3dceb8b361de1");
+				interstitialFaceBook = new com.facebook.ads.InterstitialAd(instance, "1671197079789220_1671197529789175");
+
+				interstitialFaceBook.setAdListener(new com.facebook.ads.InterstitialAdListener() {
+					@Override
+					public void onError(com.facebook.ads.Ad ad, com.facebook.ads.AdError error)
+					{
+						Log.e("TOAN","onError: " + error.getErrorMessage());
+					//	ShowAdsBackup();
+					}
+
+					@Override
+					public void onAdLoaded(com.facebook.ads.Ad ad)
+					{
+						Log.e("TOAN","onAdLoaded: " );
+						interstitialFaceBook.show();
+					}
+
+					@Override
+					public void onAdClicked(com.facebook.ads.Ad arg0) {
+					}
+
+					@Override
+					public void onInterstitialDismissed(com.facebook.ads.Ad arg0) {
+					}
+
+					@Override
+					public void onInterstitialDisplayed(com.facebook.ads.Ad arg0) {
+					}
+				});
+				interstitialFaceBook.loadAd();
+				Log.e("TOAN", "ShowAds333333333333");
+			}
+		});
+	}
 	//public static LinearLayout layout;
 	/*
 	public static AdView adView ;
