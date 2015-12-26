@@ -1,0 +1,29 @@
+fileFormatVersion: 2
+guid: b4171c62ab9b2cf4f95b82216f5cd268
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - _soundBG1: {instanceID: 0}
+  - _soundBG2: {instanceID: 0}
+  - _soundclick: {fileID: 8300000, guid: d000331781a6eb84081609f4f4f69dd2, type: 3}
+  - _soundBone: {instanceID: 0}
+  - _soundShoot: {instanceID: 0}
+  - _soundStick: {instanceID: 0}
+  - _soundCoin: {instanceID: 0}
+  - _soundStar: {instanceID: 0}
+  - _soundDiamond: {instanceID: 0}
+  - _soundDrop1: {instanceID: 0}
+  - _soundDrop2: {instanceID: 0}
+  - _soundDrop3: {instanceID: 0}
+  - _soundDrop4: {instanceID: 0}
+  - _soundDrop5: {instanceID: 0}
+  - _soundDrop6: {instanceID: 0}
+  - _soundDrop7: {instanceID: 0}
+  - _soundDrop8: {instanceID: 0}
+  - _soundLose: {instanceID: 0}
+  - _soundWin: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

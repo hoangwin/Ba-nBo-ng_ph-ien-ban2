@@ -352,7 +352,7 @@ public class GamePlay : MonoBehaviour {
                 firstShowAds = true;
             timeShowAds = 0;
 #if UNITY_ANDROID
-            using (AndroidJavaClass jc = new AndroidJavaClass("com.xiaxio.bubbleshoot.UnityPlayerNativeActivity"))
+            using (AndroidJavaClass jc = new AndroidJavaClass("com.xiaxio.bubbleshoot.UnityPlayerActivity"))
             {
                 jc.CallStatic<int>("ShowAds");
             }
