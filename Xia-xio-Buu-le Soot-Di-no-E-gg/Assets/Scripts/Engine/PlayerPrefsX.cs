@@ -175,15 +175,24 @@ public class PlayerPrefsX
         // Make a byte array that's a multiple of 8 in length, plus 5 bytes to store the number of entries as an int32 (+ identifier)
         // We have to store the number of entries, since the boolArray length might not be a multiple of 8, so there could be some padded zeroes
         var bytes = new byte[(boolArray.Length + 7) / 8 + 5];
-        bytes[0] = System.Convert.ToByte(ArrayType.Bool);	// Identifier
-        var bits = new BitArray(boolArray);
-        bits.CopyTo(bytes, 5);
+        bytes[0] = System.Convert.ToByte(ArrayType.Bool);    // Identifier
+        int mask = 1;
+        int targetIndex = 5;
+        for (int i = 0; i < boolArray.Length; i++)
+        {
+            if (boolArray[i])
+                bytes[targetIndex] |= (byte)mask;
+            mask <<= 1;
+            if (mask > 128)
+            {
+                mask = 1;
+                targetIndex++;
+            }
+        }
         Initialize();
         ConvertInt32ToBytes(boolArray.Length, bytes); // The number of entries in the boolArray goes in the first 4 bytes
-
         return SaveBytes(key, bytes);
     }
-
     public static bool[] GetBoolArray(String key)
     {
         if (PlayerPrefs.HasKey(key))
@@ -200,16 +209,20 @@ public class PlayerPrefsX
                 return new bool[0];
             }
             Initialize();
-
-            // Make a new bytes array that doesn't include the number of entries + identifier (first 5 bytes) and turn that into a BitArray
-            var bytes2 = new byte[bytes.Length - 5];
-            System.Array.Copy(bytes, 5, bytes2, 0, bytes2.Length);
-            var bits = new BitArray(bytes2);
-            // Get the number of entries from the first 4 bytes after the identifier and resize the BitArray to that length, then convert it to a boolean array
-            bits.Length = ConvertBytesToInt32(bytes);
-            var boolArray = new bool[bits.Count];
-            bits.CopyTo(boolArray, 0);
-
+            int count = ConvertBytesToInt32(bytes);
+            var boolArray = new bool[count];
+            int mask = 1;
+            int targetIndex = 5;
+            for (int i = 0; i < boolArray.Length; i++)
+            {
+                boolArray[i] = (bytes[targetIndex] & (byte)mask) != 0;
+                mask <<= 1;
+                if (mask > 128)
+                {
+                    mask = 1;
+                    targetIndex++;
+                }
+            }
             return boolArray;
         }
         return new bool[0];
